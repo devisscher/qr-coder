@@ -18,6 +18,11 @@
     </div>
 
     <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
         async function loadConfig() {
             try {
                 const response = await fetch('config.json');
@@ -27,14 +32,44 @@
                 
                 const config = await response.json();
                 
+                // Check for profile parameter first
+                const profileParam = getQueryParam('profile');
+                let activeConfig = config;
+                
+                // If profile parameter exists, use that profile's config
+                if (profileParam) {
+                    if (config.profiles && config.profiles[profileParam]) {
+                        activeConfig = config.profiles[profileParam];
+                    } else {
+                        throw new Error(`Invalid profile: ${profileParam}`);
+                    }
+                }
+                
+                // Check for query parameter destination
+                const destParam = getQueryParam('dest');
+                let redirectUrl = activeConfig.redirectUrl;
+                let message = activeConfig.message || 'Redirecting...';
+                
+                // If dest parameter exists, look for it in destinations mapping
+                if (destParam && activeConfig.destinations && activeConfig.destinations[destParam]) {
+                    redirectUrl = activeConfig.destinations[destParam];
+                    // Use custom message if provided for this destination
+                    if (activeConfig.destinationMessages && activeConfig.destinationMessages[destParam]) {
+                        message = activeConfig.destinationMessages[destParam];
+                    }
+                } else if (destParam && (!activeConfig.destinations || !activeConfig.destinations[destParam])) {
+                    // Invalid destination parameter
+                    throw new Error(`Invalid destination: ${destParam}`);
+                }
+                
                 // Update UI with config values
-                document.getElementById('message').textContent = config.message || 'Redirecting...';
-                document.getElementById('destination').textContent = `Redirecting to: ${config.redirectUrl}`;
+                document.getElementById('message').textContent = message;
+                document.getElementById('destination').textContent = `Redirecting to: ${redirectUrl}`;
                 
                 // Redirect after specified delay
-                const delay = config.delay || 2000;
+                const delay = activeConfig.delay || 2000;
                 setTimeout(() => {
-                    window.location.href = config.redirectUrl;
+                    window.location.href = redirectUrl;
                 }, delay);
                 
             } catch (error) {
@@ -43,6 +78,12 @@
                 document.getElementById('message').style.display = 'none';
                 document.getElementById('destination').style.display = 'none';
                 document.getElementById('error').classList.remove('hidden');
+                
+                // Show specific error message
+                const errorMsg = document.querySelector('#error p');
+                if (error.message.includes('Invalid destination') || error.message.includes('Invalid profile')) {
+                    errorMsg.textContent = error.message + '. Please check your QR code URL.';
+                }
             }
         }
 

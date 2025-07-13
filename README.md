@@ -42,19 +42,58 @@ Edit `config.json` to customize the redirect behavior:
 {
   "redirectUrl": "https://your-destination.com",
   "message": "Redirecting to my website...",
-  "delay": 2000
+  "delay": 2000,
+  "destinations": {
+    "product1": "https://yourstore.com/product1",
+    "product2": "https://yourstore.com/product2",
+    "special": "https://yourstore.com/special-offer"
+  },
+  "destinationMessages": {
+    "product1": "Loading Product 1...",
+    "product2": "Loading Product 2...",
+    "special": "Special offer loading..."
+  }
 }
 ```
 
 ### Configuration Options
 
-- **`redirectUrl`**: The destination URL (required)
-- **`message`**: Custom message shown during redirect (optional)
+**Root Level (Default Profile):**
+- **`redirectUrl`**: The default destination URL (required)
+- **`message`**: Default message shown during redirect (optional)
 - **`delay`**: Redirect delay in milliseconds (optional, default: 2000)
+- **`destinations`**: Map of destination keys to URLs for query string routing (optional)
+- **`destinationMessages`**: Custom messages for specific destinations (optional)
+
+**Profiles:**
+- **`profiles`**: Object containing multiple redirect configurations (optional)
+- Each profile can have its own `redirectUrl`, `message`, `delay`, `destinations`, and `destinationMessages`
+
+### Query String Routing
+
+You can create multiple QR codes that all point to your service but redirect to different destinations using query parameters:
+
+**Basic Destination Routing:**
+- `https://yourusername.github.io/qr-redirect` (uses default `redirectUrl`)
+- `https://yourusername.github.io/qr-redirect?dest=product1` (redirects to destinations.product1)
+- `https://yourusername.github.io/qr-redirect?dest=product2` (redirects to destinations.product2)
+
+**Profile-Based Routing:**
+- `https://yourusername.github.io/qr-redirect?profile=restaurant` (uses restaurant profile default)
+- `https://yourusername.github.io/qr-redirect?profile=restaurant&dest=menu` (restaurant profile, menu destination)
+- `https://yourusername.github.io/qr-redirect?profile=business&dest=portfolio` (business profile, portfolio destination)
+- `https://yourusername.github.io/qr-redirect?profile=event&dest=schedule` (event profile, schedule destination)
+
+**Benefits:**
+- Create multiple QR codes for different purposes
+- Manage all destinations from one config file
+- Use different profiles for different contexts (restaurant, business, event)
+- Track which QR codes are being used
+- Easy to add new destinations without creating new services
 
 ## Examples
 
-### Redirect to Your Portfolio
+### Simple Single Redirect
 ```json
 {
   "redirectUrl": "https://yourportfolio.com",
@@ -63,22 +102,73 @@ Edit `config.json` to customize the redirect behavior:
 }
 ```
 
-### Redirect to a Specific Campaign
+### Multiple Profiles with Complete Redirect Configurations
 ```json
 {
-  "redirectUrl": "https://yourstore.com/special-offer",
-  "message": "Special offer loading...",
-  "delay": 1000
+  "redirectUrl": "https://yourstore.com",
+  "message": "Redirecting...",
+  "delay": 2000,
+  "profiles": {
+    "restaurant": {
+      "redirectUrl": "https://yourrestaurant.com/menu",
+      "message": "Welcome to our restaurant!",
+      "delay": 1500,
+      "destinations": {
+        "menu": "https://yourrestaurant.com/menu",
+        "specials": "https://yourrestaurant.com/todays-specials",
+        "reservations": "https://yourrestaurant.com/book-table",
+        "contact": "https://yourrestaurant.com/contact"
+      },
+      "destinationMessages": {
+        "menu": "Loading our delicious menu...",
+        "specials": "Check out today's specials...",
+        "reservations": "Book your table...",
+        "contact": "Get in touch with us..."
+      }
+    },
+    "business": {
+      "redirectUrl": "https://yourbusiness.com/about",
+      "message": "Welcome to our business!",
+      "delay": 1000,
+      "destinations": {
+        "about": "https://yourbusiness.com/about",
+        "services": "https://yourbusiness.com/services",
+        "portfolio": "https://yourbusiness.com/portfolio",
+        "contact": "https://yourbusiness.com/contact"
+      },
+      "destinationMessages": {
+        "about": "Learn about our story...",
+        "services": "Discover our services...",
+        "portfolio": "View our work...",
+        "contact": "Get in touch..."
+      }
+    }
+  }
 }
 ```
 
+**QR Codes for this setup:**
+
+**Restaurant Profile:**
+- Table tents: `https://yoursite.github.io/qr-redirect?profile=restaurant&dest=menu`
+- Specials board: `https://yoursite.github.io/qr-redirect?profile=restaurant&dest=specials`
+- Business cards: `https://yoursite.github.io/qr-redirect?profile=restaurant&dest=contact`
+
+**Business Profile:**
+- Portfolio flyer: `https://yoursite.github.io/qr-redirect?profile=business&dest=portfolio`
+- Service brochure: `https://yoursite.github.io/qr-redirect?profile=business&dest=services`
+- Networking cards: `https://yoursite.github.io/qr-redirect?profile=business&dest=contact`
+
 ## Use Cases
 
-- **Event Links**: Update QR codes on printed materials to point to different event pages
-- **Menu QR Codes**: Restaurant menus that can be updated seasonally
-- **Business Cards**: Point to different landing pages for different campaigns
-- **Conference Materials**: Update session links without reprinting materials
-- **Marketing Campaigns**: A/B test different landing pages with the same QR code
+- **Multi-Business Management**: Different profiles for restaurant, retail, and service businesses
+- **Event Management**: Separate profiles for different events (conference, wedding, concert) with unique destinations
+- **Seasonal Campaigns**: Switch between profiles for different seasons/campaigns without changing QR codes
+- **Department-Specific**: Different profiles for sales, support, marketing departments
+- **Location-Based**: Different profiles for multiple store locations or venues
+- **Client-Specific**: Separate profiles for different clients or projects
+- **A/B Testing**: Test different redirect flows by switching profiles
+- **Multi-Language**: Different profiles for different languages or regions
 
 ## File Structure
 

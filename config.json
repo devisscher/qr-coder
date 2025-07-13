@@ -1,5 +1,15 @@
 {
-  "redirectUrl": "https://e9144a-30.myshopify.com/products/tip-your-captain",
-  "message": "Redirecting...",
-  "delay": 2000
+  "profiles": {
+    "pontoon": {
+      "redirectUrl": "https://e9144a-30.myshopify.com/products/tip-your-captain",
+      "message": "It's very important to tip your captain!",
+      "delay": 1500,
+      "destinations": {
+        "tip": "https://e9144a-30.myshopify.com/products/tip-your-captain"
+      },
+      "destinationMessages": {
+        "tip": "Taking you to tip your captain..."
+      }
+    }
+  }
 } 

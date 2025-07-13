@@ -1,0 +1,5 @@
+{
+  "redirectUrl": "https://example.com",
+  "message": "Redirecting...",
+  "delay": 2000
+} 

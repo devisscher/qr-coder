@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Redirect Service</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h1 id="message">Loading...</h1>
+        <p id="destination"></p>
+        <div id="error" class="error hidden">
+            <h2>Error</h2>
+            <p>Unable to load redirect configuration. Please try again later.</p>
+        </div>
+    </div>
+
+    <script>
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load config');
+                }
+                
+                const config = await response.json();
+                
+                // Update UI with config values
+                document.getElementById('message').textContent = config.message || 'Redirecting...';
+                document.getElementById('destination').textContent = `Redirecting to: ${config.redirectUrl}`;
+                
+                // Redirect after specified delay
+                const delay = config.delay || 2000;
+                setTimeout(() => {
+                    window.location.href = config.redirectUrl;
+                }, delay);
+                
+            } catch (error) {
+                console.error('Error loading config:', error);
+                document.querySelector('.spinner').style.display = 'none';
+                document.getElementById('message').style.display = 'none';
+                document.getElementById('destination').style.display = 'none';
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+
+        // Load config when page loads
+        window.addEventListener('DOMContentLoaded', loadConfig);
+    </script>
+</body>
+</html> 

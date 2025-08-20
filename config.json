@@ -13,6 +13,17 @@
       "destinationMessages": {
         "tip": "Taking you to tip your captain..."
       }
+    },
+    "peter": {
+      "redirectUrl": "https://e9144a-30.myshopify.com/products/peters-fridge",
+      "message": "It's very important to tip your elders!",
+      "delay": 1500,
+      "destinations": {
+        "tip": "https://e9144a-30.myshopify.com/products/peters-fridge"
+      },
+      "destinationMessages": {
+        "tip":"Just the tip matters!"
+      }
     }
   }
 } 
